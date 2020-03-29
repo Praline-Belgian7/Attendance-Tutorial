@@ -2,23 +2,23 @@ class SessionsController < ApplicationController
 
   def new
   end
-  
+
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      # ログイン後にユーザー情報ページにリダイレクトします。
-      log_in(user)
-      redirect_to(user)
+      log_in user
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+      redirect_to user
     else
-      flash.now[:danger] = "承認に失敗しました。"
+      flash.now[:danger] = '認証に失敗しました。'
       render :new
     end
   end
-  
+
   def destroy
-    log_out
-    flash[:success] = "ログアウトしました。"
-    redirect_to root_path	
+    # ログイン中の場合のみログアウト処理を実行します。
+    log_out if logged_in?
+    flash[:success] = 'ログアウトしました。'
+    redirect_to root_url
   end
-  
 end
