@@ -1,14 +1,16 @@
 Rails.application.routes.draw do
+  root 'static_pages#top'
+  get '/signup', to: 'users#new'
 
-  root "static_pages#top"
+  # ログイン機能
+  get    '/login', to: 'sessions#new'
+  post   '/login', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
 
-  get '/signup' => "users#new"
-  resources :users
-
-  #ログイン機能
-  get '/login' => "sessions#new"
-  post "/login" => "sessions#create"
-  delete "/logout" => "sessions#destroy"
-
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  resources :users do
+    member do
+      get 'edit_basic_info'
+      patch 'update_basic_info'
+    end
+  end
 end
